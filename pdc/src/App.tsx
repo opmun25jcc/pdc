@@ -1,0 +1,269 @@
+import './App.css'
+import '@govtechsg/sgds/css/sgds.css';
+import unionJack from './assets/unionJack.webp';
+import { Col, Row, Card } from '@govtechsg/sgds-react';
+import { APIProvider, Map, InfoWindow, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import { Polygon } from './polygon';
+import groupPic from './assets/DSC03210_sRGB_50.jpg';
+
+import { useState } from 'react';
+
+type sharedTroops = { position: google.maps.LatLngLiteral, title: string }
+const locations: sharedTroops[] = [
+  {
+    position: { lat: 1.42138, lng: 103.867627 },
+    title: "No. 34 Squadron RAF, 8 Bristol Blenheim bombers"
+  },
+  {
+    position: { lat: 1.413322, lng: 103.864537 },
+    title: "No. 36 Squadron RAF, 9 Vickers Vildebeest bombers"
+  },
+  {
+    position: { lat: 1.404055, lng: 103.864537 },
+    title: "No.205 Squadron RAF 3PBY Catalinas flying boats"
+  },
+  {
+    position: { lat: 1.398994, lng: 103.814420 },
+    title: "No. 1 Squadron RAAF, 10 Hudson Bombers"
+  },
+  {
+    position: { lat: 1.310649, lng: 103.896790 },
+    title: "No. 243 Squadron RAF, 12 Buffalo Aircraft"
+  },
+  {
+    position: { lat: 1.259940, lng: 103.823689 },
+    title: "22nd Bridgade"
+  },
+  {
+    position: { lat: 1.427550, lng: 103.841818 },
+    title: "27th Bridgade"
+  },
+  {
+    position: { lat: 1.269940, lng: 103.843689 },
+    title: "9th Indian Division"
+  },
+
+  {
+    position: { lat: 1.269940, lng: 103.823689 },
+    title: "11th Indian Division"
+  },
+  {
+    position: { lat: 1.464342, lng: 103.834328 },
+    title: "HMS Durban"
+  },
+  {
+    position: { lat: 1.460484, lng: 103.833186 },
+    title: "HMS Danae"
+  },
+  {
+    position: { lat: 1.462412, lng: 103.833298 },
+    title: "HMS Dauntless"
+  },
+  {
+    position: { lat: 1.461554, lng: 103.833855 },
+    title: "HMS Tenedos"
+  },
+  {
+    position: { lat: 1.460953, lng: 103.832482 },
+    title: "HMS Thanet"
+  },
+];
+
+type enemyTroops = { position: google.maps.LatLngLiteral, title: string }
+const places: enemyTroops[] = [
+  {
+    position: { lat: 2.063272, lng: 102.585191 },
+    title: "Last known sighting of Japanese troops"
+  },
+  {position:{lat: 6.103588, lng: 102.252299},
+    title:"Known Seisure by Japanese air force"
+    }
+
+]
+
+const PoiMarkers = (props: { pois: sharedTroops[] }) => {
+  const [infoWindowOpen, setInfoWindowOpen] = useState<number | null>(null);
+
+  return (
+    <>
+      {props.pois.map((poi: sharedTroops, index: number) => (
+        <div key={index}>
+          <AdvancedMarker
+            position={poi.position}
+            onClick={() => setInfoWindowOpen(index)}
+          >
+            <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
+          </AdvancedMarker>
+
+          {infoWindowOpen === index && (
+            <InfoWindow
+              position={poi.position}
+              onCloseClick={() => setInfoWindowOpen(null)}
+            >
+              <div style={{ padding: '8px' }}>
+                <strong>{poi.title}</strong>
+              </div>
+            </InfoWindow>
+          )}
+        </div>
+      ))}
+    </>
+  );
+};
+
+const EnemyMarkers = (props: { pois: enemyTroops[] }) => {
+  const [infoWindowOpen, setInfoWindowOpen] = useState<number | null>(null);
+
+  return (
+    <>
+      {props.pois.map((poi: enemyTroops, index: number) => (
+        <div key={index}>
+          <AdvancedMarker
+            position={poi.position}
+            onClick={() => setInfoWindowOpen(index)}
+          >
+            <Pin background={'#ffffffff'} glyphColor={'#ff0000ff'} borderColor={'#000000ff'} />
+          </AdvancedMarker>
+
+          {infoWindowOpen === index && (
+            <InfoWindow
+              position={poi.position}
+              onCloseClick={() => setInfoWindowOpen(null)}
+            >
+              <div style={{ padding: '8px' }}>
+                <strong>{poi.title}</strong>
+              </div>
+            </InfoWindow>
+          )}
+        </div>
+      ))}
+    </>
+  );
+};
+
+// const polygonPaths = [
+//   { lat: 1.272686, lng: 103.577527 },
+//   { lat: 1.457341, lng: 103.865231 },
+//   { lat: 1.369064, lng: 104.010800 },
+//   { lat: 1.306596, lng: 103.815106 } // Closing the loop
+// ];
+
+function App() {
+  return (
+    <>
+      <Row>
+        <Col style={{ width: '100%', backgroundColor: "#f6eee3" }} lg="5" xs>
+          <div className="topBar">
+            <h1>Joint Cabinet Crisis</h1>
+            <a className='topBarLinks' href="#/">Updates</a>
+            <a className='topBarLinks' href="https://forms.gle/9QhMmUZhjLAE5cXTA" target='blank'>Directive Form</a>
+            <a className='topBarLinks' href="#/editor">Map Editor</a>
+            <a className='topBarLinks' href="#/council-directives">Council Directives</a>
+          </div>
+          <div className='firstFromTop'>
+            <h1>
+              <img src={unionJack} width="20%" style={{ margin: '2vw' }} alt="Union Jack" />
+              <br />
+              Crisis Updates</h1>
+            <h2>The Malayan Times</h2>
+          </div>
+
+          <APIProvider apiKey={'AIzaSyDdBGrtXdcOkvVC37W-WoCQIK9TjAwYGUs'} onLoad={() => console.log('Maps API has loaded.')}>
+
+            <Map
+              className='main-map'
+              defaultZoom={11.5}
+              mapId={"eb87b183946a00eea25854ea"}
+              defaultCenter={{ lat: 1.3521, lng: 103.8193 }}
+              disableDefaultUI={true}
+
+            >
+              <Polygon paths={[
+                { lat: 6.751390, lng: 99.991443},
+                { lat: 6.478561, lng: 102.298572 },
+                {lat: 5.249637, lng: 103.188464},
+                {lat: 4.663522, lng: 103.551013},
+                { lat: 2.423655,lng: 103.875110},
+                //Add coords here ig
+                { lat: 2.033937, lng: 102.595202 },
+                {lat: 2.580405, lng: 101.210925},
+              {lat: 3.666419, lng: 100.749499},
+            {lat: 5.331137, lng: 100.123279},]}
+                fillColor={'#ff0000ff'}
+                strokeColor={'#ff4a4aff'} />
+
+              <PoiMarkers pois={locations} />
+              <EnemyMarkers pois={places} />
+            </Map>
+
+          </APIProvider>
+          {/* <Card style={{ marginLeft: '2vw', marginRight: '2vw', marginBottom: '4vw' }}>
+
+            <Card.Body>
+              <Card.Title>Haha funny</Card.Title>
+              <Card.Text>
+                This is where the main body of the text goes, when updating, preview on the website to see if this is what u want
+              </Card.Text>
+            </Card.Body>
+            </Card> */}
+
+          <Card style={{marginLeft:'2vw', marginRight:'2vw', marginBottom:'4vw'}}>
+            <Card.Img
+              alt="img alternate text goes here"
+              src={groupPic}
+              variant="top"
+            />
+            <Card.Body>
+              <Card.Title>
+                Welcome to Crisis!
+              </Card.Title>
+              If you are part of the People's Defence Cabinet, welcome!
+              <br/>
+              Else if you are part of the British East Asia Cabinet, go back to your cabinet updates page...
+            </Card.Body>
+          </Card>
+
+          {/* <Card style={{ marginLeft: '2vw', marginRight: '2vw', marginBottom: '4vw' }}>
+            <Card.Body>
+              <Card.Title>
+                Another Cool Title
+              </Card.Title>
+              <Card.Text>
+                Some serious crisis update text goes here.<br /> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </Card.Text>
+              <Card.Link href="#">
+                New link to new thing
+              </Card.Link>
+            </Card.Body>
+            <Card.Img
+              alt="img alternate text goes here"
+              src="https://picsum.photos/300"
+              variant="bottom"
+            />
+          </Card> */}
+          {/* <Card style={{ marginLeft: '2vw', marginRight: '2vw', marginBottom: '4vw' }}>
+            <Card.Img
+              alt="img alternate text goes here"
+              src="https://picsum.photos/600"
+              variant="top"
+            />
+            <Card.Body>
+              <Card.Title>
+                Very Cool Title
+              </Card.Title>
+              <Card.Text>
+                Some funny crisis update text goes here.<br /> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </Card.Text>
+              <Card.Link href="#">
+                Link to something
+              </Card.Link>
+            </Card.Body>
+          </Card> */}
+        </Col>
+      </Row>
+    </>
+  );
+
+}
+
+export default App;
