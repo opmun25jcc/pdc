@@ -1,10 +1,9 @@
 import './App.css'
 import '@govtechsg/sgds/css/sgds.css';
-import unionJack from './assets/unionJack.webp';
+import SGColony from './assets/SG_Colony.png';
 import { Col, Row, Card } from '@govtechsg/sgds-react';
 import { APIProvider, Map, InfoWindow, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 import { Polygon } from './polygon';
-import groupPic from './assets/DSC03210_sRGB_50.jpg';
 
 import { useState } from 'react';
 
@@ -162,7 +161,7 @@ function App() {
           </div>
           <div className='firstFromTop'>
             <h1>
-              <img src={unionJack} width="20%" style={{ margin: '2vw' }} alt="Union Jack" />
+              <img src={SGColony} width="20%" style={{ margin: '2vw' }} alt="Singapore Colony Flag" />
               <br />
               Crisis Updates</h1>
             <h2>The Malayan Times</h2>
@@ -208,11 +207,11 @@ function App() {
             </Card> */}
 
           <Card style={{marginLeft:'2vw', marginRight:'2vw', marginBottom:'4vw'}}>
-            <Card.Img
+            {/* <Card.Img
               alt="img alternate text goes here"
               src={groupPic}
               variant="top"
-            />
+            /> */}
             <Card.Body>
               <Card.Title>
                 Welcome to Crisis!
